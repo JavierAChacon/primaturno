@@ -1,49 +1,28 @@
-import pool from "../config/db.js";
-import type {
-  CreateService,
-  UpdateService,
-  Service,
-} from "../types/service.js";
+import { PrismaClient } from "@prisma/client";
+import type { Service } from "@prisma/client";
+import type { CreateService, UpdateService } from "../types/service.js";
 
-export const createService = async (
-  serviceData: CreateService
-): Promise<Service> => {
-  const { name, description, price } = serviceData;
-  const { rows } = await pool.query(
-    "INSERT INTO services (name, description, price) VALUES ($1, $2, $3) RETURNING *",
-    [name, description, price]
-  );
-  return rows[0];
-};
+const prisma = new PrismaClient();
 
-export const getAllServices = async (): Promise<Service[]> => {
-  const { rows } = await pool.query("SELECT * FROM services");
-  return rows;
-};
+export async function createService(data: CreateService): Promise<Service> {
+  return prisma.service.create({ data });
+}
 
-export const getServiceById = async (id: number): Promise<Service | null> => {
-  const { rows } = await pool.query("SELECT * FROM services WHERE id = $1", [
-    id,
-  ]);
-  return rows[0] || null;
-};
+export async function getAllServices(): Promise<Service[]> {
+  return prisma.service.findMany();
+}
 
-export const updateService = async (id: number, serviceData: UpdateService) => {
-  const { name, description, price } = serviceData;
-  const { rows } = await pool.query(
-    `UPDATE services
-     SET name = $1, description = $2, price = $3, updated_at = NOW()
-     WHERE id = $4
-     RETURNING *`,
-    [name, description, price, id]
-  );
-  return rows[0];
-};
+export async function getServiceById(id: number): Promise<Service | null> {
+  return prisma.service.findUnique({ where: { id } });
+}
 
-export const deleteService = async (id: number) => {
-  const { rows } = await pool.query(
-    "DELETE FROM services WHERE id = $1 RETURNING *",
-    [id]
-  );
-  return rows[0];
-};
+export async function updateService(
+  id: number,
+  data: UpdateService
+): Promise<Service | null> {
+  return prisma.service.update({ where: { id }, data });
+}
+
+export async function deleteService(id: number): Promise<Service | null> {
+  return prisma.service.delete({ where: { id } });
+}

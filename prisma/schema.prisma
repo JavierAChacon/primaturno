@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id           Int           @id @default(autoincrement())
+  name         String
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  staff        Staff[]
+  services     Service[]
+  customers    Customer[]
+  appointments Appointment[]
+}
+
+model Staff {
+  id             Int           @id @default(autoincrement())
+  name           String
+  last_name      String
+  phone          String        @unique
+  isAdmin        Boolean       @default(false) @map("is_admin")
+  organizationId Int           @map("organization_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  appointments   Appointment[]
+}
+
+model Service {
+  id             Int          @id @default(autoincrement())
+  name           String
+  description    String?
+  price          Float
+  organizationId Int          @map("organization_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Customer {
+  id             Int           @id @default(autoincrement())
+  name           String
+  last_name      String
+  phone          String        @unique
+  organizationId Int           @map("organization_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  appointments   Appointment[]
+}
+
+model Appointment {
+  id             Int          @id @default(autoincrement())
+  scheduledAt    DateTime     @map("scheduled_at")
+  customerId     Int          @map("customer_id")
+  staffId        Int          @map("staff_id")
+  organizationId Int          @map("organization_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  staff          Staff        @relation(fields: [staffId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}

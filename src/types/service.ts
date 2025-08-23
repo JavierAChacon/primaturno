@@ -1,21 +1,4 @@
-export interface CreateService {
-  name: string;
-  description?: string | null;
-  price: number;
-}
+import type { Prisma } from "@prisma/client";
 
-export interface Service {
-  id: number;
-  name: string;
-  description: string | null;
-  price: number;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface UpdateService {
-  id: number;
-  name?: string;
-  description?: string | null;
-  price?: number;
-}
+export type CreateService = Prisma.ServiceCreateInput;
+export type UpdateService = Prisma.ServiceUpdateInput;

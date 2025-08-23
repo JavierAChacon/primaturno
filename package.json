@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc --watch",
     "start": "nodemon dist/index.js",
-    "dev": "tsc --watch & nodemon dist/index.js"
+    "dev": "tsc --watch & nodemon dist/index.js",
+    "migrate-and-seed": "npx prisma migrate dev && npx tsc && npx prisma db seed"
   },
   "keywords": [],
   "author": "",
@@ -14,16 +15,16 @@
   "type": "module",
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "@types/pg": "^8.15.5",
     "nodemon": "^3.1.10",
+    "prisma": "^6.14.0",
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@prisma/client": "^6.14.0",
     "@types/express": "^5.0.3",
     "@types/node": "^24.3.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "pg": "^8.16.3"
+    "express": "^5.1.0"
   }
 }
