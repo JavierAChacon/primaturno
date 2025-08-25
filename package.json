@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc --watch",
+    "build": "tsc",
     "start": "nodemon dist/src/index.js",
     "dev": "tsc --watch & nodemon dist/src/index.js",
-    "migrate-and-seed": "npx prisma migrate dev && npx tsc && npx prisma db seed"
+    "migrate": "npx prisma migrate dev",
+    "seed": "npx prisma db seed"
   },
   "keywords": [],
   "author": "",

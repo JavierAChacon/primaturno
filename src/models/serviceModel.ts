@@ -12,17 +12,17 @@ export async function getAllServices(): Promise<Service[]> {
   return prisma.service.findMany();
 }
 
-export async function getServiceById(id: number): Promise<Service | null> {
+export async function getServiceById(id: string): Promise<Service | null> {
   return prisma.service.findUnique({ where: { id } });
 }
 
 export async function updateService(
-  id: number,
+  id: string,
   data: UpdateService
 ): Promise<Service | null> {
   return prisma.service.update({ where: { id }, data });
 }
 
-export async function deleteService(id: number): Promise<Service | null> {
+export async function deleteService(id: string): Promise<Service | null> {
   return prisma.service.delete({ where: { id } });
 }
