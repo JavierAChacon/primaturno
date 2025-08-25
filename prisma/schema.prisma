@@ -8,61 +8,169 @@ datasource db {
 }
 
 model Organization {
-  id           Int           @id @default(autoincrement())
-  name         String
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  staff        Staff[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String?  @unique
+  logo      String?
+  metadata  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   services     Service[]
   customers    Customer[]
   appointments Appointment[]
+  members      Member[]
+  invitations  Invitation[]
+
+  @@map("organization")
 }
 
-model Staff {
-  id             Int           @id @default(autoincrement())
-  name           String
-  last_name      String
-  phone          String        @unique
-  isAdmin        Boolean       @default(false) @map("is_admin")
-  organizationId Int           @map("organization_id")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  appointments   Appointment[]
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  name          String
+  lastName      String?  @map("last_name")
+  phone         String?  @unique
+  idNumber      String?  @unique @map("id_number")
+  image         String?
+  emailVerified Boolean  @map("email_verified")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  sessions    Session[]
+  accounts    Account[]
+  members     Member[]
+  invitations Invitation[]
+
+  @@map("user")
+}
+
+model Session {
+  id                   Int      @id @default(autoincrement())
+  expiresAt            DateTime @map("expires_at")
+  token                String   @unique
+  createdAt            DateTime @map("created_at")
+  updatedAt            DateTime @map("updated_at")
+  ipAddress            String?  @map("ip_address")
+  userAgent            String?  @map("user_agent")
+  userId               Int      @map("user_id")
+  activeOrganizationId Int?     @map("active_organization_id")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    Int       @id @default(autoincrement())
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                Int       @map("user_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         Int       @id @default(autoincrement())
+  identifier String
+  value      String
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @map("created_at")
+  updatedAt  DateTime? @map("updated_at")
+
+  @@map("verification")
+}
+
+model Member {
+  id             Int      @id @default(autoincrement())
+  organizationId Int      @map("organization_id")
+  userId         Int      @map("user_id")
+  isAdmin        Boolean  @default(false) @map("is_admin")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  appointments Appointment[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             Int      @id @default(autoincrement())
+  organizationId Int      @map("organization_id")
+  email          String
+  status         String
+  expiresAt      DateTime @map("expires_at")
+  inviterId      Int      @map("inviter_id")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+  role         String?
+
+  @@map("invitation")
 }
 
 model Service {
-  id             Int          @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   name           String
   description    String?
   price          Float
-  organizationId Int          @map("organization_id")
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int      @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("service")
 }
 
 model Customer {
-  id             Int           @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   name           String
-  last_name      String
-  phone          String        @unique
-  organizationId Int           @map("organization_id")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  organization   Organization  @relation(fields: [organizationId], references: [id])
-  appointments   Appointment[]
+  lastName       String   @map("last_name")
+  phone          String   @unique
+  organizationId Int      @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
+  appointments Appointment[]
+
+  @@map("customer")
+}
+
+enum status {
+  Agendada
+  Completada
+  Cancelada
 }
 
 model Appointment {
-  id             Int          @id @default(autoincrement())
-  scheduledAt    DateTime     @map("scheduled_at")
-  customerId     Int          @map("customer_id")
-  staffId        Int          @map("staff_id")
-  organizationId Int          @map("organization_id")
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
-  customer       Customer     @relation(fields: [customerId], references: [id])
-  staff          Staff        @relation(fields: [staffId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  id             Int      @id @default(autoincrement())
+  status         status   @default(Agendada)
+  scheduledAt    DateTime @map("scheduled_at")
+  customerId     Int      @map("customer_id")
+  staffMemberId  Int      @map("staff_member_id")
+  organizationId Int      @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  customer     Customer     @relation(fields: [customerId], references: [id])
+  staffMember  Member       @relation(fields: [staffMemberId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("appointment")
 }
