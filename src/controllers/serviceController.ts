@@ -94,7 +94,7 @@ export const getServiceByIdController = async (
   next: NextFunction
 ) => {
   try {
-    const serviceId = Number(req.params.id);
+    const serviceId = String(req.params.id);
 
     if (serviceId === null || serviceId === undefined) {
       return handleResponse(
@@ -122,7 +122,7 @@ export const updateServiceController = async (
   next: NextFunction
 ) => {
   try {
-    const serviceId = Number(req.params.id);
+    const serviceId = String(req.params.id);
 
     if (serviceId === null || serviceId === undefined) {
       return handleResponse(
@@ -197,7 +197,7 @@ export const deleteServiceController = async (
   next: NextFunction
 ) => {
   try {
-    const serviceId = Number(req.params.id);
+    const serviceId = String(req.params.id);
 
     if (serviceId === null || serviceId === undefined) {
       return handleResponse(
