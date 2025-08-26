@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["jest", "node"],
+    "noEmit": false,
+    "sourceMap": true
+  },
+  "include": [
+    "../src/**/*",
+    "./**/*.test.ts",
+    "./**/*.spec.ts",
+    "../**/__tests__/**/*.ts"
+  ]
+}
