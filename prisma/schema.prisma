@@ -10,20 +10,19 @@ datasource db {
 model User {
   id            String       @id
   name          String
-  email         String
+  email         String       @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
   lastName      String
-  idNumber      String
-  phone         String
+  idNumber      String       @unique
+  phone         String       @unique
   sessions      Session[]
   accounts      Account[]
   members       Member[]
   invitations   Invitation[]
 
-  @@unique([email, idNumber, phone])
   @@map("user")
 }
 
