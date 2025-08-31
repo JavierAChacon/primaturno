@@ -9,9 +9,8 @@
     "dev": "tsc --watch & nodemon dist/src/index.js",
     "migrate": "npx prisma migrate dev",
     "seed": "npx prisma db seed",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
-    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
-    "test:cov": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -19,17 +18,20 @@
   "type": "module",
   "devDependencies": {
     "@better-auth/cli": "^1.3.7",
+    "@testcontainers/postgresql": "^11.5.1",
     "@types/cors": "^2.8.19",
     "@types/jest": "^30.0.0",
     "jest": "^30.0.5",
     "nodemon": "^3.1.10",
     "prisma": "^6.14.0",
+    "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
     "@types/express": "^5.0.3",
+    "@types/supertest": "^6.0.3",
     "better-auth": "^1.3.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
